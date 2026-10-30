@@ -716,7 +716,7 @@ function qLabel(st, dflt) {
   if (st.tag === "rev" || st.tag === "fill") return "Повторение";
   return dflt;
 }
-function requeueWord(w) { const it = revItem(w, "fill"); it.stages = [stagesFor(w)[0]]; it.retry = true; it.ready = SES.step + 3; SES.items.push(it); }
+function requeueWord(w) { const it = revItem(w, "fill"); it.stages = [stagesFor(w)[0]]; it.retry = true; it.ready = SES.step + 4; SES.items.push(it); }
 function onAnswer(ok, w) {
   const it = SES.item, r = rec(w);
   if (ok) r.ok++; else r.bad++;
@@ -726,7 +726,7 @@ function onAnswer(ok, w) {
     it.i++; it.retry = false; it.ready = SES.step + GAP_OK;
     if (it.i >= it.stages.length) { it.done = true; if (it.kind === "learn" && it.fresh) srsLearned(w); }
   } else {
-    it.misses++; it.retry = true; it.ready = SES.step + 3 + Math.floor(Math.random() * 3);
+    it.misses++; it.retry = true; it.ready = SES.step + 4 + Math.floor(Math.random() * 3);
     SES.mistakes++; SES.wrongWords.add(w);
   }
   save();
