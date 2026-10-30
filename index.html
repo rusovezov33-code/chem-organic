@@ -675,7 +675,7 @@ function pickNext() {
   const t = SES.step, recent = recentIds();
   const open = SES.items.filter(it => !it.done), isIntro = it => it.stages[it.i] === "intro";
   const qs = open.filter(it => !isIntro(it));
-  const ready = qs.filter(it => it.ready <= t && !recent.includes(it.w.id)).sort((a, b) => a.ready - b.ready || (a.kind === "rev" ? -1 : 1));
+  const ready = qs.filter(it => it.ready <= t && !recent.includes(it.w.id)).sort((a, b) => (b.retry ? 1 : 0) - (a.retry ? 1 : 0) || a.ready - b.ready || (a.kind === "rev" ? -1 : 1));
   if (ready.length) return ready[0];
   const intros = open.filter(isIntro), active = qs.filter(it => it.kind === "learn").length;
   const pool = (SES.pool || []).filter(w => !recent.includes(w.id));
@@ -686,6 +686,12 @@ function pickNext() {
   const spare = SES.mode === "exam" ? [] : SES.items.filter(it => it.done && it.kind === "learn" && !SES.extraUsed.has(it.w.id) && !recent.includes(it.w.id)).map(it => it.w)
     .concat((SES.spare || []).filter(w => !SES.extraUsed.has(w.id) && !recent.includes(w.id)));
   if (qs.length && spare.length) { const w = spare[0]; SES.extraUsed.add(w.id); const it = revItem(w, "fill"); it.stages = [stagesFor(w)[0]]; return addItem(it); }
+  // nothing is due yet: keep a wrong card's 3-task gap with a quick filler on an already finished card
+  if (SES.mode !== "exam" && qs.some(it => it.retry) && (SES.fillers || 0) < 8) {
+    const recent3 = recentIds(3), busy = new Set(qs.map(it => it.w.id));
+    const fw = SES.items.filter(it => it.done && !it.retry && !recent3.includes(it.w.id) && !busy.has(it.w.id)).map(it => it.w);
+    if (fw.length) { const w = fw[Math.floor(Math.random() * fw.length)]; SES.fillers = (SES.fillers || 0) + 1; const it = revItem(w, "fill"); it.stages = [stagesFor(w)[0]]; return addItem(it); }
+  }
   const later = qs.filter(it => !recent.includes(it.w.id)).sort((a, b) => a.ready - b.ready);
   return later[0] || qs.sort((a, b) => a.ready - b.ready)[0] || null;
 }
