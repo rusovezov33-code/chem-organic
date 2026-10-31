@@ -1,5 +1,5 @@
 /* Органическая химия — service worker. Bump VERSION on every release. */
-const VERSION = "v3-mistakes-2026-10-31";
+const VERSION = "v4-verify3-2026-10-31";
 const CACHE = "chem-organic-" + VERSION;
 const ASSETS = [
   "./",
