@@ -1,5 +1,5 @@
 /* Органическая химия — service worker. Bump VERSION on every release. */
-const VERSION = "v5-latefix-2026-10-31";
+const VERSION = "v6-kr-labs-2026-11-02";
 const CACHE = "chem-organic-" + VERSION;
 const ASSETS = [
   "./",
